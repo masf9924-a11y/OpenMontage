@@ -1,5 +1,6 @@
 import { Composition, CalculateMetadataFunction } from "remotion";
 import { Explainer, ExplainerProps } from "./Explainer";
+import { AulaPatologia, calculateAulaMetadata } from "./AulaPatologia";
 import {
   CinematicRenderer,
   calculateCinematicMetadata,
@@ -136,6 +137,16 @@ const calculateMetadata: CalculateMetadataFunction<ExplainerProps> = async ({
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="AulaPatologia"
+        component={AulaPatologia}
+        durationInFrames={300}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ episode: 1, episodeTitle: "", slides: [] }}
+        calculateMetadata={calculateAulaMetadata}
+      />
       <Composition
         id="Explainer"
         component={Explainer}
