@@ -348,6 +348,78 @@ const Flashcard: React.FC<{ v: any; qPhase: number; countPhase: number }> = ({ v
   );
 };
 
+const Section: React.FC<{ v: any }> = ({ v }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const s = spring({ frame, fps, config: { damping: 150 } });
+  return (
+    <AbsoluteFill style={{ background: `linear-gradient(120deg, ${T.navy}, ${T.teal})`, fontFamily: "Inter, sans-serif" }}>
+      <Molecules hue="#ffffff" />
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ letterSpacing: 14, color: "#9fd8e8", fontWeight: 800, fontSize: 34, opacity: ease(frame, 0, 14) }}>{v.num}</div>
+        <div
+          style={{
+            fontFamily: "Montserrat, sans-serif",
+            fontWeight: 900,
+            fontSize: 118,
+            color: "#ffffff",
+            margin: "16px 0",
+            transform: `translateY(${interpolate(s, [0, 1], [40, 0])}px)`,
+            opacity: ease(frame, 4, 22),
+          }}
+        >
+          {v.label}
+        </div>
+        <div style={{ height: 6, width: interpolate(s, [0, 1], [0, 360]), background: "#9fd8e8", borderRadius: 4 }} />
+        <div style={{ fontSize: 40, color: "#d6ecf5", marginTop: 26, opacity: ease(frame, 18, 36) }}>{v.sub}</div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+const Steps: React.FC<{ v: any }> = ({ v }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  return (
+    <Shell>
+      <AbsoluteFill style={{ padding: "110px 150px", justifyContent: "center" }}>
+        <Header text={v.title} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          {v.steps.map((st: string, i: number) => {
+            const start = 16 + i * 18;
+            const sp = spring({ frame: frame - start, fps, config: { damping: 130 } });
+            const o = ease(frame, start, start + 14);
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 28, opacity: o, transform: `translateX(${interpolate(o, [0, 1], [-50, 0])}px)` }}>
+                <div
+                  style={{
+                    minWidth: 76,
+                    height: 76,
+                    borderRadius: 38,
+                    background: T.teal,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontFamily: "Montserrat, sans-serif",
+                    fontWeight: 900,
+                    fontSize: 38,
+                    transform: `scale(${interpolate(sp, [0, 1], [0.3, 1])})`,
+                  }}
+                >
+                  {i + 1}
+                </div>
+                <div style={{ fontSize: 44, color: T.ink, lineHeight: 1.25 }}>{st}</div>
+                {i < v.steps.length - 1 ? null : null}
+              </div>
+            );
+          })}
+        </div>
+      </AbsoluteFill>
+    </Shell>
+  );
+};
+
 export const SceneView: React.FC<{ scene: any }> = ({ scene }) => {
   const v = scene.visual;
   switch (scene.type) {
@@ -365,6 +437,10 @@ export const SceneView: React.FC<{ scene: any }> = ({ scene }) => {
       return <Reaction v={v} />;
     case "compare":
       return <Compare v={v} />;
+    case "section":
+      return <Section v={v} />;
+    case "steps":
+      return <Steps v={v} />;
     case "flashcard":
       return <Flashcard v={v} qPhase={scene.qPhase} countPhase={scene.countPhase} />;
     default:
